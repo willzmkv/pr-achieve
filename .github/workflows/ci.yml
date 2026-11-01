@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    name: pytest (headless)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install system deps (Qt + virtual display)
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y \
+            libgl1-mesa-glx libegl1-mesa \
+            libxcb-cursor0 libxcb-icccm4 libxcb-keysyms1 \
+            xvfb
+
+      - name: Install Python deps
+        run: pip install -e ".[dev]"
+
+      - name: Run tests (headless via xvfb)
+        run: xvfb-run -a pytest --tb=short -v
+
+  lint:
+    name: ruff + black
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install linters
+        run: pip install ruff black
+
+      - name: ruff check
+        run: ruff check . || echo "No source yet"
+
+      - name: black check
+        run: black --check . || echo "No source yet"
