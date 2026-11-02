@@ -1,0 +1,30 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pr-achieve"
+version = "0.1.0"
+description = "Project-R achievement overlay daemon"
+readme = "README.md"
+license = "GPL-3.0-only"
+requires-python = ">=3.11"
+dependencies = [
+    "PyQt6>=6.6",
+    "aiohttp>=3.9",
+    "inotify-simple>=1.3",
+]
+
+[project.scripts]
+pr-achieve = "pr_achieve.daemon:main"
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "pytest-asyncio>=0.23", "pytest-mock>=3.12"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/pr_achieve"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+testpaths = ["tests"]
